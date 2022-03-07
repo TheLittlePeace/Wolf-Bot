@@ -42,65 +42,6 @@ BOT.add_cog(ErrorHandler(BOT))
 
 
 
-@BOT.command()
-async def PhaseEnd(ctx, totimezone="UTC"):
-    totimezone = totimezone.upper()
-    global PHASE_END_TIME
-    global PHASE_END_TIMEZONE
-    if PHASE_END_TIME == "":
-        await ctx.send ("No phase set!")
-        return
-    newtime = doConvertTimezone(PHASE_END_TIME, PHASE_END_TIMEZONE, totimezone)
-    splitdate = newtime.split(" ")
-    message = "Phase will end on " + str(datetime.strptime(splitdate[0], 
-        "%Y-%m-%d").strftime("%A, %B %d"))
-    message += " at " + str(datetime.strptime(splitdate[1], 
-        "%H:%M:%S").strftime("%I:%M %p"))
-    message += " " + totimezone
-    await ctx.send(message)
-#end PhaseEnd command
 
-@BOT.command()
-async def PhaseLeft(ctx):
-    throwaway = await doPhaseLeft(ctx)
-#end PhaseLeft command
-
-@BOT.command()
-async def PhaseCountdown(ctx):
-    global PHASE_END_TIME
-    global PHASE_END_TIMEZONE
-    message_info = await doPhaseLeft(ctx)
-    if message_info["success"] == False:
-        return
-    message_id = message_info["messageinfo"].id
-    channel = ctx.channel
-    message = await channel.fetch_message(message_id)
-    phaseendtime = datetime.strptime(doConvertTimezone(PHASE_END_TIME, 
-        PHASE_END_TIMEZONE, "EST"), "%Y-%m-%d %H:%M:%S")
-
-    while True:
-        now = datetime.now()
-        if now >= phaseendtime:
-            await message.edit(content = "Time is up!")
-            break
-        timelist = doTimeDiff(phaseendtime, now)
-        hours = timelist[0]
-        minutes = timelist[1]
-        seconds = timelist[2]
-        await message.edit(content = "Time remaining: " + str(hours) + 
-            " hours, " + str(minutes) + " minutes and " + str(seconds) + 
-            " seconds")
-        gc.collect
-        sleep(.85)
-
-@BOT.command()
-async def Time(ctx, totimezone="UTC"):
-    totimezone = totimezone.upper()
-    now = datetime.now()
-    current_time = now.strftime("%Y-%m-%d %H:%M:%S")
-    newtime = doConvertTimezone(current_time, "EST", totimezone)
-    message_info = await ctx.send("Current time: " + newtime + " " + totimezone)
-    # await ctx.send("Ignore this plz: " + str(message_info.id))
-#end Time command
 
 BOT.run(TOKEN)

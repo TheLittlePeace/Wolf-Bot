@@ -9,6 +9,7 @@ from BotFunctions import *
 class Host_Commands(commands.Cog):
 
     """
+    
     """
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")

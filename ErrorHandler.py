@@ -18,5 +18,4 @@ class ErrorHandler(commands.Cog):
         message += "Error text: " + str(error)
         print(error)
         await ctx.reply(message)
-BOT.add_cog(ErrorHandler(BOT))
 #end ErrorHandler
