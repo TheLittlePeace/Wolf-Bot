@@ -15,11 +15,11 @@ class Host_Commands(commands.Cog):
     """
     SetPhaseEnd - Set the ending of the current phase.
         Parms:
-            self - The commands functionality
-            ctx - The bot functionality
-            intime - The time to be entered. Fuzzy matches.
-            intimezone - Timezone for the aformentioned time.
-        Outputs:
+            self:       The commands functionality
+            ctx:        The bot functionality
+            intime:     The time to be entered. Fuzzy matches.
+            intimezone: Timezone for the aformentioned time.
+        Output:
             Confirmation that the time was set correctly, or an error.
     """
     @commands.command()
@@ -43,9 +43,9 @@ class Host_Commands(commands.Cog):
     """
     Kill - Swap the roles of a player from living to dead.
         Parms:
-            self - The commands functionality
-            ctx - The bot functionality
-            inuser - The player to "kill"
+            self:   The commands functionality
+            ctx:    The bot functionality
+            inuser: The player to "kill"
     """
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host")
@@ -55,10 +55,15 @@ class Host_Commands(commands.Cog):
     #end Kill command
 
     """
+    PhaseCountdown - Displays how much time is left in the phase, and then 
+                     edits it every ~second
+        Parms:
+            self:   The commands functionality
+            ctx:    The bot functionality
     """
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host")
-    async def PhaseCountdown(ctx):
+    async def PhaseCountdown(self, ctx):
         global PHASE_END_TIME
         global PHASE_END_TIMEZONE
         message_info = await doPhaseLeft(ctx)

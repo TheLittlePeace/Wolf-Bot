@@ -6,14 +6,18 @@ from BotFunctions import *
 #############################
 # PLAYER-SPECIFIC COMMANDS
 #############################
-class Host_Commands(commands.Cog):
+class Player_Commands(commands.Cog):
 
     """
-    
+    PhaseEnd - Get the time the phase will end.
+        Parms:
+            self:       The commands functionality
+            ctx:        The bot functionality
+            totimezone: The timezone to use for the time. Default UTC
     """
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
-    async def PhaseEnd(ctx, totimezone="UTC"):
+    async def PhaseEnd(self, ctx, totimezone="UTC"):
         totimezone = totimezone.upper()
         global PHASE_END_TIME
         global PHASE_END_TIMEZONE
@@ -32,18 +36,27 @@ class Host_Commands(commands.Cog):
     #end PhaseEnd command
 
     """
+    PhaseLeft - Displays how much time is left in the phase.
+        Parms:
+            self:   The commands functionality
+            ctx:    The bot functionality   
     """
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
-    async def PhaseLeft(ctx):
+    async def PhaseLeft(self, ctx):
         throwaway = await doPhaseLeft(ctx)
     #end PhaseLeft command
 
     """
+    Time - display the current time in a specified timezone.
+        Parms:
+            self:       The commands functionality
+            ctx:        The bot functionality
+            totimezone: The timezone to display the time in. Default UTC
     """
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
-    async def Time(ctx, totimezone="UTC"):
+    async def Time(self, ctx, totimezone="UTC"):
         totimezone = totimezone.upper()
         now = datetime.now()
         current_time = now.strftime("%Y-%m-%d %H:%M:%S")

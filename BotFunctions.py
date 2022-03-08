@@ -2,10 +2,21 @@
 from datetime import datetime
 import pytz
 import collections
+import os
+import psycopg2
+from dotenv import load_dotenv
 
+load_dotenv()
 
 TZONES = collections.defaultdict(set)
 ABBREVS = collections.defaultdict(set)
+PGPW = os.getenv('POSTGRESQL_PASSWORD')
+PGCONN = psycopg2.connect(
+    host = "localhost",
+    database = "TWG",
+    user = "postgres",
+    password = PGPW
+)
 
 for name in pytz.all_timezones:
     tzone = pytz.timezone(name)
@@ -122,4 +133,18 @@ async def doPhaseLeft(ctx):
         }
 #end doPhaseLeft function
 
-# def getGlobalData(id):
+"""
+getGlobalData - Retrieve a global data variable from the database.
+    Parms:
+        id: The variable to retrieve.
+    Returns:
+        The data requested, IN STRING FORM
+"""
+def getGlobalData(id):
+    global PGCONN
+    cur = PGCONN.cursor()
+    id = id.upper().trim()
+    cur.execute("SELECT Data FROM GlobalDataStore WHERE ID = %s"), id
+    ret = cur.fetchone[0]
+    return ret
+#end getGlobalData function
