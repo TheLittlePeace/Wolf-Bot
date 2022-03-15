@@ -6,7 +6,6 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 from discord.utils import get
-from ErrorHandler import *
 
 load_dotenv()
 
@@ -95,7 +94,7 @@ doPhaseLeft - Get how much time is left in the current phase.
             "seconds":      The seconds left in the phase.
 *(note: the mins & secs do not include the hours, i.e. it won't be above 60)
 """
-async def doPhaseLeft(ctx):
+async def doPhaseLeft(ctx): 
     phaseendtime = getGlobalData("PHASEENDTIME")
     if(phaseendtime == None):
         await customError("Phase End Not Found!")
@@ -285,3 +284,20 @@ async def removeRole(ctx, name:str, role:str):
     await user.remove_roles(roleobj)
     return True
 #end removeRole
+
+"""
+customError - Raise a custom error message, for things that won't be caught.
+    Parms:
+        ctx:    The bot functionality
+        errTxt: The custom text to display.
+    Outputs:
+        The custom error message to the user that raised it.
+"""
+async def customError(ctx, errTxt):
+    message = "Beep boop, something went wrong. "
+    message += "Review the command and try again.\n"
+    message += "Use !help [command] for more information.\n"
+    message += "Error text: " + errTxt
+    print(errTxt)
+    await ctx.reply(message)
+#end customError

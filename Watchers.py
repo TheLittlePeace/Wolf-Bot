@@ -1,6 +1,6 @@
 #ErrorHandler.py
 from discord.ext import commands
-from BotFunctions import *
+from BotFunctions import * 
 from discord import *
 
 #############################

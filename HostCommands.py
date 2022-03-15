@@ -6,7 +6,7 @@ from dateutil import parser
 from time import sleep
 import gc
 from BotFunctions import *
-from ErrorHandler import *
+from Watchers import *
 
 #############################
 # HOST-SPECIFIC COMMANDS
