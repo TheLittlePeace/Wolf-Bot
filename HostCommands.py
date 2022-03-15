@@ -6,6 +6,7 @@ from dateutil import parser
 from time import sleep
 import gc
 from BotFunctions import *
+from ErrorHandler import *
 
 #############################
 # HOST-SPECIFIC COMMANDS
@@ -25,34 +26,26 @@ class Host_Commands(commands.Cog):
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host")
     async def SetPhaseEnd(self, ctx, intime, intimezone):
-        global PHASE_END_TIME
-        global PHASE_END_TIMEZONE
         intime = parser.parse(intime, fuzzy=True)
         intimezone = intimezone.upper()
-        PHASE_END_TIME = str(intime)
-        PHASE_END_TIMEZONE = intimezone
-        splitdate = PHASE_END_TIME.split(" ")
+        end_time = str(intime)
+        end_timezone = intimezone
+        success = setGlobalData("PhaseEndTime", end_time)
+        if(success == False):
+            await customError(ctx, "Failed to connect to Database [WRITE/" +
+                "UPDATE PhaseEndTime]")
+        success = setGlobalData("PhaseEndTZone", end_timezone)
+        if(success == False):
+            await customError(ctx, "Failed to connect to Database [WRITE/" +
+                "UPDATE PhaseEndTZone")
+        splitdate = end_time.split(" ")
         message = "Phase end set to " + str(datetime.strptime(splitdate[0],
             "%Y-%m-%d").strftime("%A, %B %d"))
         message += " at " + str(datetime.strptime(splitdate[1], 
             "%H:%M:%S").strftime("%I:%M %p"))
-        message += " " + PHASE_END_TIMEZONE
+        message += " " + end_timezone
         await ctx.send(message)
     #end SetPhaseEnd command
-
-    """
-    Kill - Swap the roles of a player from living to dead.
-        Parms:
-            self:   The commands functionality
-            ctx:    The bot functionality
-            inuser: The player to "kill"
-    """
-    @commands.command()
-    @commands.has_any_role("The Werewolf Council", "Host")
-    async def Kill(self, ctx, inuser: discord.Member):
-        await inuser.add_roles("Dead")
-        await inuser.remove_roles("Living")
-    #end Kill command
 
     """
     PhaseCountdown - Displays how much time is left in the phase, and then 
@@ -64,16 +57,22 @@ class Host_Commands(commands.Cog):
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host")
     async def PhaseCountdown(self, ctx):
-        global PHASE_END_TIME
-        global PHASE_END_TIMEZONE
+        phaseendtime = getGlobalData("PHASEENDTIME")
+        if(phaseendtime == None):
+            await customError(ctx, "Phase End Not Found!")
+            return
+        phaseendtzone = getGlobalData("PHASEENDTZONE")
+        if(phaseendtzone == None):
+            await customError(ctx, "Phase End Not Found!")
+            return
         message_info = await doPhaseLeft(ctx)
         if message_info["success"] == False:
             return
         message_id = message_info["messageinfo"].id
         channel = ctx.channel
         message = await channel.fetch_message(message_id)
-        phaseendtime = datetime.strptime(doConvertTimezone(PHASE_END_TIME, 
-            PHASE_END_TIMEZONE, "EST"), "%Y-%m-%d %H:%M:%S")
+        phaseendtime = datetime.strptime(doConvertTimezone(phaseendtime, 
+            phaseendtzone, "EST"), "%Y-%m-%d %H:%M:%S")
 
         while True:
             now = datetime.now()
@@ -89,3 +88,104 @@ class Host_Commands(commands.Cog):
                 " seconds")
             gc.collect
             sleep(.85)
+
+    """
+    Kill - Swap the roles of a player from living to dead.
+        Parms:
+            self:   The commands functionality
+            ctx:    The bot functionality
+            args:   The player(s) to "kill"
+    """
+    @commands.command()
+    @commands.has_any_role("The Werewolf Council", "Host")
+    async def Kill(self, ctx: commands.Context, *args):
+        for name in args:
+            result = await removeRole(ctx, name, "LivingRole")
+            if(result != True):
+                await customError(ctx, result)
+            result = await giveRole(ctx, name, "DeadRole")
+            if(result != True):
+                await customError(ctx, result)
+            await ctx.send(name + " has been killed.")
+    #end Kill command
+
+    """
+    Livify - Swap the roles of a player from dead to living.
+        Parms:
+            self:   The commands functionality
+            ctx:    The bot functionality
+            args:   The player(s) to "revive"
+    """
+    @commands.command()
+    @commands.has_any_role("The Werewolf Council", "Host")
+    async def Livify(self, ctx: commands.Context, *args):
+        for name in args:
+            result = await removeRole(ctx, name, "DeadRole")
+            if(result != True):
+                await customError(ctx, result)
+            result = await giveRole(ctx, name, "LivingRole")
+            if(result != True):
+                await customError(ctx, result)
+            await ctx.send(name + " is alive.")
+    #end Livify command
+
+    """
+    handleSpectators - give all non-living, dead, or host players the Spectator
+                        role.
+        Parms:
+            self:   The commands functionality
+            ctx:    The bot functionality
+    """
+    @commands.command()
+    @commands.has_any_role("The Werewolf Council", "Host")
+    async def handleSpectators(self, ctx: commands.Context):
+        livingid = int(getGlobalData('LivingRole'))
+        deadid = int(getGlobalData('DeadRole'))
+        hostid = int(getGlobalData('HostRole'))
+        livingrole = get(ctx.guild.roles, id = livingid)
+        deadrole = get(ctx.guild.roles, id = deadid)
+        hostrole = get(ctx.guild.roles, id = hostid)
+        members = ctx.guild.members
+        for member in members:
+            if(livingrole in member.roles or
+                    deadrole in member.roles or
+                    hostrole in member.roles or
+                    member.bot == True):
+                continue
+            result = await giveRole(ctx, member.name, 'SpectatorRole')
+            await ctx.send(member.name + " made a Spectator.")
+    #end handleSpectators
+
+    """
+    removeGameRoles - remove all game-related roles.
+        Parms:
+            self:   The commands functionality
+            ctx:    The bot functionality
+            args:   The players to apply it to. Can specify ALL.
+                    WARNING: This can remove the Host role.
+    """
+    @commands.command()
+    @commands.has_any_role("The Werewolf Council", "Host")
+    async def removeGameRoles(self, ctx: commands.Context, *args):
+        if(args[0] == 'ALL'):
+            membs = ctx.guild.members
+            loopvar = list()
+            for m in membs:
+                loopvar.append(m.name)
+            loopvar = tuple(loopvar)
+        else:
+            loopvar = args
+        for name in loopvar:
+            result = await removeRole(ctx, name, "DeadRole")
+            if(result != True):
+                await customError(ctx, result)
+            result = await removeRole(ctx, name, "LivingRole")
+            if(result != True):
+                await customError(ctx, result)
+            result = await removeRole(ctx, name, "HostRole")
+            if(result != True):
+                await customError(ctx, result)
+            result = await removeRole(ctx, name, "SpectatorRole")
+            if(result != True):
+                await customError(ctx, result)
+                

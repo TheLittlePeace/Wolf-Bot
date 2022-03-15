@@ -19,12 +19,18 @@ class Player_Commands(commands.Cog):
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
     async def PhaseEnd(self, ctx, totimezone="UTC"):
         totimezone = totimezone.upper()
-        global PHASE_END_TIME
-        global PHASE_END_TIMEZONE
-        if PHASE_END_TIME == "":
+        phaseendtime = getGlobalData("PHASEENDTIME")
+        if(phaseendtime == None):
+            await customError("Phase End Not Found!")
+            return
+        phaseendtzone = getGlobalData("PHASEENDTZONE")
+        if(phaseendtzone == None):
+            await customError("Phase End Not Found!")
+            return
+        if phaseendtime == "":
             await ctx.send ("No phase set!")
             return
-        newtime = doConvertTimezone(PHASE_END_TIME, PHASE_END_TIMEZONE, 
+        newtime = doConvertTimezone(phaseendtime, phaseendtzone, 
             totimezone)
         splitdate = newtime.split(" ")
         message = "Phase will end on " + str(datetime.strptime(splitdate[0], 
