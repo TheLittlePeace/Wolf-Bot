@@ -189,3 +189,27 @@ class Host_Commands(commands.Cog):
             if(result != True):
                 await customError(ctx, result)
                 
+    """
+    setVoting - turn voting on or off
+        Parms:
+            self:   The commands functionality
+            ctx:    The bot context
+            onoff:  Whether to turn voting on or off. Accepts only ON and OFF
+    """
+    @commands.command()
+    @commands.has_any_role("The Werewolf Council", "Host")
+    async def setVoting(self, ctx: commands.Context, onoff: str):
+        if(onoff.lower() != 'on' and onoff.lower() != 'off'):
+            await customError(ctx, "This command only accepts 'On' or 'Off'")
+            return
+        setGlobalData('VOTING', onoff.upper())
+        channel = discord.utils.get(ctx.guild.channels, name='voting-room')
+        if(onoff.lower() == 'on'):
+            vote_id = getGlobalData('CURRENT_VOTE_ID')
+            vote_id = int(vote_id)
+            vote_id += 1
+            setGlobalData('CURRENT_VOTE_ID', str(vote_id))
+            await channel.send("----------START VOTE----------")
+        else:
+            await channel.send("-----------END VOTE-----------")
+    #end setVoting
