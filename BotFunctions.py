@@ -1,5 +1,5 @@
 #BotFunctions.py
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 import collections
 import os
@@ -95,11 +95,11 @@ doPhaseLeft - Get how much time is left in the current phase.
 *(note: the mins & secs do not include the hours, i.e. it won't be above 60)
 """
 async def doPhaseLeft(ctx): 
-    phaseendtime = getGlobalData("PHASEENDTIME")
+    phaseendtime = getGlobalData("PHASE_END_TIME")
     if(phaseendtime == None):
         await customError("Phase End Not Found!")
         return
-    phaseendtzone = getGlobalData("PHASEENDTZONE")
+    phaseendtzone = getGlobalData("PHASE_END_TZONE")
     if(phaseendtzone == None):
         await customError("Phase End Not Found!")
         return
@@ -154,8 +154,10 @@ def getGlobalData(id: str):
     cur.execute("SELECT data FROM globaldatastore WHERE id = %s", (id,))
     ret = cur.fetchone()
     if(ret == None):
+        cur.close()
         return False
     ret = ret[0]
+    cur.close()
     return ret
 #end getGlobalData function
 
@@ -189,8 +191,10 @@ def setGlobalData(id: str, data: str):
     cur.execute("SELECT data FROM GlobalDataStore WHERE id = %s", (id,))
     ret = cur.fetchone()
     if(ret == None):
+        cur.close
         return False
     PGCONN.commit()
+    cur.close()
     return True
 #end setGlobalData
 
@@ -212,8 +216,10 @@ def setUser(username: str, userid: int):
     cur.execute("SELECT userid FROM members WHERE username = %s", (username,))
     ret = cur.fetchone()
     if(ret == None):
+        cur.close()
         return False
     PGCONN.commit()
+    cur.close()
     return True
 #end setUser
 
@@ -236,15 +242,17 @@ def getUserID(name: str):
     cur.execute(sqlstmt, (name, name))
     ret = cur.fetchone()
     if(ret == None):
+        cur.close()
         return False
     ret = ret[0]
+    cur.close()
     return ret
 #end getUserID
     
 """
 giveRole - Give a user a specified role
     Parms:
-        ctx:    The bot functions.
+        ctx:    The commands context
         name:   The user to set the role of. Can be username or nickname.
         role:   The name of the role to be given, as stored in GlobalDataStore.
     Returns:
@@ -254,11 +262,10 @@ async def giveRole(ctx, name: str, role: str):
     userid = getUserID(name)
     if(userid == False):
         return "User " + name + " not found! Check spelling and try again."
-    roleid = int(getGlobalData(role))
-    if(roleid == False):
+    roleobj = get(ctx.guild.roles, name = role)
+    if(roleobj == False):
         return "Role " + role + " not found! Check spelling and try again."
     user = await ctx.guild.fetch_member(userid)
-    roleobj = get(ctx.guild.roles, id = roleid)
     await user.add_roles(roleobj)
     return True
 #end giveRole
@@ -266,7 +273,7 @@ async def giveRole(ctx, name: str, role: str):
 """
 removeRole - Remove a user's specified role
     Parms:
-        ctx:    The bot functions.
+        ctx:    The commands context
         Name:   The user to remove the role from. Username or nickname.
         role:   The role to be removed, as stored in GlobalDataStore.
     Returns:
@@ -276,11 +283,10 @@ async def removeRole(ctx, name:str, role:str):
     userid = getUserID(name)
     if(userid == False):
         return "User " + name + " not found! Check spelling and try again."
-    roleid = int(getGlobalData(role))
-    if(roleid == False):
+    roleobj = get(ctx.guild.roles, name = role)
+    if(roleobj == False):
         return "Role " + role + " not found! Check spelling and try again."
     user = await ctx.guild.fetch_member(userid)
-    roleobj = get(ctx.guild.roles, id = roleid)
     await user.remove_roles(roleobj)
     return True
 #end removeRole
@@ -288,7 +294,7 @@ async def removeRole(ctx, name:str, role:str):
 """
 customError - Raise a custom error message, for things that won't be caught.
     Parms:
-        ctx:    The bot functionality
+        ctx:    The commands context
         errTxt: The custom text to display.
     Outputs:
         The custom error message to the user that raised it.
@@ -301,3 +307,53 @@ async def customError(ctx, errTxt):
     print(errTxt)
     await ctx.reply(message)
 #end customError
+
+"""
+getLiving - Get all living players.
+    Parms:
+        ctx:    The commands context
+    Returns:
+        List of all living players
+"""
+async def getLiving(ctx):
+    role = get(ctx.guild.roles, name = "Living")
+    return role.members
+#end getLiving
+
+"""
+resetGame - Reset all global variables to the beginning of the game.
+"""
+def resetGame():
+    setGlobalData("PHASE_END_TIME", "")
+    setGlobalData("PHASE_END_TZONE", "")
+    setGlobalData("VOTING", "OFF")
+    setGlobalData("PHASE_DAY_NIGHT", "DAY")
+    setGlobalData("PHASE_NUM", "0")
+
+"""
+phaseChange - Tick the phase
+"""
+def phaseChange():
+    current_phase = getGlobalData("PHASE_DAY_NIGHT")
+    current_num = int(getGlobalData("PHASE_NUM"))
+    current_PET = getGlobalData("PHASE_END_TIME")
+    current_PETZ = getGlobalData("PHASE_END_TZONE")
+    current_PET = datetime.strptime(doConvertTimezone(current_PET, 
+        current_PETZ, "EST"), "%Y-%m-%d %H:%M:%S")
+    
+    #Night to day
+    if(current_phase == "NIGHT"):
+        setGlobalData("PHASE_DAY_NIGHT", "DAY")
+        current_PET = current_PET + timedelta(hours = 16)
+        current_PET = current_PET.strftime("%Y-%m-%d, %H:%M:%S")
+        setGlobalData("PHASE_END_TIME", current_PET)
+    
+    #Day to night
+    else:
+        setGlobalData("PHASE_DAY_NIGHT", "NIGHT")
+        setGlobalData("PHASE_NUM", str(current_num + 1))
+        current_PET = current_PET + timedelta(hours = 8)
+        current_PET = current_PET.strftime("%Y-%m-%d, %H:%M:%S")
+        setGlobalData("PHASE_END_TIME", current_PET)
+        
+        

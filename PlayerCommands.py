@@ -1,7 +1,9 @@
 #PlayerCommands.py
+import imp
 import discord
 from discord.ext import commands
 from BotFunctions import *
+import collections
 
 #############################
 # PLAYER-SPECIFIC COMMANDS
@@ -11,19 +13,19 @@ class Player_Commands(commands.Cog):
     """
     PhaseEnd - Get the time the phase will end.
         Parms:
-            self:       The commands functionality
-            ctx:        The bot functionality
+            self:       This class
+            ctx:        Commands context
             totimezone: The timezone to use for the time. Default UTC
     """
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
     async def PhaseEnd(self, ctx, totimezone="UTC"):
         totimezone = totimezone.upper()
-        phaseendtime = getGlobalData("PHASEENDTIME")
+        phaseendtime = getGlobalData("PHASE_END_TIME")
         if(phaseendtime == None):
             await customError("Phase End Not Found!")
             return
-        phaseendtzone = getGlobalData("PHASEENDTZONE")
+        phaseendtzone = getGlobalData("PHASE_END_TZONE")
         if(phaseendtzone == None):
             await customError("Phase End Not Found!")
             return
@@ -44,8 +46,8 @@ class Player_Commands(commands.Cog):
     """
     PhaseLeft - Displays how much time is left in the phase.
         Parms:
-            self:   The commands functionality
-            ctx:    The bot functionality   
+            self:   This class
+            ctx:    Commands context
     """
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
@@ -56,8 +58,8 @@ class Player_Commands(commands.Cog):
     """
     Time - display the current time in a specified timezone.
         Parms:
-            self:       The commands functionality
-            ctx:        The bot functionality
+            self:       This class
+            ctx:        Commands context
             totimezone: The timezone to display the time in. Default UTC
     """
     @commands.command()
@@ -70,3 +72,33 @@ class Player_Commands(commands.Cog):
         message_info = await ctx.send("Current time: " + newtime + " " + 
             totimezone)
     #end Time command
+
+    """
+    Votes - Display the current vote phase's tally
+        Parms:
+            self:   This class
+            ctx:    Commands context
+    """
+    @commands.command()
+    @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
+    async def Votes(self, ctx):
+        global PGCONN
+        cur = PGCONN.cursor()
+        vote_id = getGlobalData('CURRENT_VOTE_ID')
+        ret_dict = {}
+        response = "__Current Vote Standing:__\n"
+        living_players = await getLiving(ctx)
+        for memb in living_players:
+            sql = "SELECT COUNT(*) FROM playervotes WHERE vote = %s AND id = %s"
+            cur.execute(sql, (memb.name, str(vote_id)))
+            votes = cur.fetchone()
+            # response += "**" + memb.name + "**: " + str(votes[0]) + "\n"
+            ret_dict[memb.name] = votes[0]
+        sorted_x = sorted(ret_dict.items(), key = lambda kv: kv[1], 
+            reverse = True)
+        sorted_dict = collections.OrderedDict(sorted_x)
+        for key in sorted_dict:
+            response += "**" + key + "**: " + str(sorted_dict[key]) + "\n"
+        await ctx.send(response)
+        cur.close()
+        

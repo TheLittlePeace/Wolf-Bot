@@ -6,7 +6,7 @@ from dateutil import parser
 from time import sleep
 import gc
 from BotFunctions import *
-from Watchers import *
+from Listeners import *
 
 #############################
 # HOST-SPECIFIC COMMANDS
@@ -30,14 +30,14 @@ class Host_Commands(commands.Cog):
         intimezone = intimezone.upper()
         end_time = str(intime)
         end_timezone = intimezone
-        success = setGlobalData("PhaseEndTime", end_time)
+        success = setGlobalData("Phase_End_Time", end_time)
         if(success == False):
             await customError(ctx, "Failed to connect to Database [WRITE/" +
-                "UPDATE PhaseEndTime]")
-        success = setGlobalData("PhaseEndTZone", end_timezone)
+                "UPDATE Phase_End_Time]")
+        success = setGlobalData("Phase_End_TZone", end_timezone)
         if(success == False):
             await customError(ctx, "Failed to connect to Database [WRITE/" +
-                "UPDATE PhaseEndTZone")
+                "UPDATE Phase_End_TZone")
         splitdate = end_time.split(" ")
         message = "Phase end set to " + str(datetime.strptime(splitdate[0],
             "%Y-%m-%d").strftime("%A, %B %d"))
@@ -57,11 +57,11 @@ class Host_Commands(commands.Cog):
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host")
     async def PhaseCountdown(self, ctx):
-        phaseendtime = getGlobalData("PHASEENDTIME")
+        phaseendtime = getGlobalData("PHASE_END_TIME")
         if(phaseendtime == None):
             await customError(ctx, "Phase End Not Found!")
             return
-        phaseendtzone = getGlobalData("PHASEENDTZONE")
+        phaseendtzone = getGlobalData("PHASE_END_TZONE")
         if(phaseendtzone == None):
             await customError(ctx, "Phase End Not Found!")
             return
@@ -100,10 +100,10 @@ class Host_Commands(commands.Cog):
     @commands.has_any_role("The Werewolf Council", "Host")
     async def Kill(self, ctx: commands.Context, *args):
         for name in args:
-            result = await removeRole(ctx, name, "LivingRole")
+            result = await removeRole(ctx, name, "Living")
             if(result != True):
                 await customError(ctx, result)
-            result = await giveRole(ctx, name, "DeadRole")
+            result = await giveRole(ctx, name, "Dead")
             if(result != True):
                 await customError(ctx, result)
             await ctx.send(name + " has been killed.")
@@ -120,10 +120,10 @@ class Host_Commands(commands.Cog):
     @commands.has_any_role("The Werewolf Council", "Host")
     async def Livify(self, ctx: commands.Context, *args):
         for name in args:
-            result = await removeRole(ctx, name, "DeadRole")
+            result = await removeRole(ctx, name, "Dead")
             if(result != True):
                 await customError(ctx, result)
-            result = await giveRole(ctx, name, "LivingRole")
+            result = await giveRole(ctx, name, "Living")
             if(result != True):
                 await customError(ctx, result)
             await ctx.send(name + " is alive.")
@@ -139,12 +139,9 @@ class Host_Commands(commands.Cog):
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host")
     async def handleSpectators(self, ctx: commands.Context):
-        livingid = int(getGlobalData('LivingRole'))
-        deadid = int(getGlobalData('DeadRole'))
-        hostid = int(getGlobalData('HostRole'))
-        livingrole = get(ctx.guild.roles, id = livingid)
-        deadrole = get(ctx.guild.roles, id = deadid)
-        hostrole = get(ctx.guild.roles, id = hostid)
+        livingrole = get(ctx.guild.roles, name = 'Living')
+        deadrole = get(ctx.guild.roles, name = 'Dead')
+        hostrole = get(ctx.guild.roles, name = 'Host')
         members = ctx.guild.members
         for member in members:
             if(livingrole in member.roles or
@@ -152,7 +149,7 @@ class Host_Commands(commands.Cog):
                     hostrole in member.roles or
                     member.bot == True):
                 continue
-            result = await giveRole(ctx, member.name, 'SpectatorRole')
+            result = await giveRole(ctx, member.name, 'Spectator')
             await ctx.send(member.name + " made a Spectator.")
     #end handleSpectators
 
@@ -176,16 +173,16 @@ class Host_Commands(commands.Cog):
         else:
             loopvar = args
         for name in loopvar:
-            result = await removeRole(ctx, name, "DeadRole")
+            result = await removeRole(ctx, name, "Dead")
             if(result != True):
                 await customError(ctx, result)
-            result = await removeRole(ctx, name, "LivingRole")
+            result = await removeRole(ctx, name, "Living")
             if(result != True):
                 await customError(ctx, result)
-            result = await removeRole(ctx, name, "HostRole")
+            result = await removeRole(ctx, name, "Host")
             if(result != True):
                 await customError(ctx, result)
-            result = await removeRole(ctx, name, "SpectatorRole")
+            result = await removeRole(ctx, name, "Spectator")
             if(result != True):
                 await customError(ctx, result)
                 
@@ -213,3 +210,22 @@ class Host_Commands(commands.Cog):
         else:
             await channel.send("-----------END VOTE-----------")
     #end setVoting
+
+    """
+    Say - Just say a message in a specified channel.
+        Parms:
+            self:       The commands functionality
+            ctx:        The bot context
+            channel:    The channel to send it to
+            message:    The message to send
+    """
+    @commands.command()
+    @commands.has_any_role("The Werewolf Council", "Host")
+    async def Say(self, ctx: commands.Context, 
+        channel: str, message: str):
+        endChannel = discord.utils.get(ctx.guild.channels, name=channel)
+        if(endChannel == None):
+            await customError(ctx, "Channel not found.")
+            return
+        await endChannel.send(message)
+    #end Say
