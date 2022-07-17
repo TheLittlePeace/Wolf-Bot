@@ -93,7 +93,7 @@ class Player_Commands(commands.Cog):
             cur.execute(sql, (memb.name, str(vote_id)))
             votes = cur.fetchone()
             # response += "**" + memb.name + "**: " + str(votes[0]) + "\n"
-            ret_dict[memb.nick] = votes[0]
+            ret_dict[memb.display_name] = votes[0]
         sorted_x = sorted(ret_dict.items(), key = lambda kv: kv[1], 
             reverse = True)
         sorted_dict = collections.OrderedDict(sorted_x)
