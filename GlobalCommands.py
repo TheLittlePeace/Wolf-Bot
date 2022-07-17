@@ -51,3 +51,15 @@ class Global_Commands(commands.Cog):
         response = requests.get(url, headers = {"Accept": "application/json"})
         jokedict = json.loads(response.text)
         await ctx.reply(jokedict["joke"])
+
+    """
+    FFXIV - Have wolfbot say the FFXIV copypasta
+        Parms:
+            self:       This class
+            ctx:        Commands context
+    """
+    @commands.command()
+    async def FFXIV(self, ctx):
+        copypasta = """Have you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award winning Heavensward expansion up to level 60 for free with no restrictions on playtime."""
+        await ctx.message.delete()
+        await ctx.send(copypasta)
