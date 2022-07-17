@@ -72,7 +72,7 @@ class Host_Commands(commands.Cog):
         channel = ctx.channel
         message = await channel.fetch_message(message_id)
         phaseendtime = datetime.strptime(doConvertTimezone(phaseendtime, 
-            phaseendtzone, "EST"), "%Y-%m-%d %H:%M:%S")
+            phaseendtzone, "EPT"), "%Y-%m-%d %H:%M:%S")
 
         while True:
             now = datetime.now()

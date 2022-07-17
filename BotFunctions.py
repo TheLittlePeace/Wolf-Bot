@@ -45,16 +45,16 @@ def doConvertTimezone(intime: str, begtimezone: str, endtimezone: str):
     endtimezone = endtimezone.upper()
     #Need to convert timezone?
     global TZONES
-    if len(begtimezone) <= 3:
+    if(len(begtimezone) <= 3):
         begtimezone = next(iter(TZONES[begtimezone])).upper()
-    if len(endtimezone) <= 3:
+    if(len(endtimezone) <= 3):
         endtimezone = next(iter(TZONES[endtimezone])).upper()
 
     begtimezone = pytz.timezone(begtimezone)
     endtimezone = pytz.timezone(endtimezone)
 
     intime = datetime.strptime(intime, "%Y-%m-%d %H:%M:%S")
-    intime = begtimezone.localize(intime)
+    intime = begtimezone.localize(intime) 
     intime = intime.astimezone(endtimezone)
     intime = intime.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -113,7 +113,7 @@ async def doPhaseLeft(ctx):
             "seconds": 0
         }
     phaseendtime = datetime.strptime(doConvertTimezone(phaseendtime, 
-        phaseendtzone, "EST"), "%Y-%m-%d %H:%M:%S")
+        phaseendtzone, "EPT"), "%Y-%m-%d %H:%M:%S")
     now = datetime.now()
     if now >= phaseendtime:
         message_info = await ctx.send ("TIME IS UP!")

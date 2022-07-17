@@ -68,7 +68,7 @@ class Player_Commands(commands.Cog):
         totimezone = totimezone.upper()
         now = datetime.now()
         current_time = now.strftime("%Y-%m-%d %H:%M:%S")
-        newtime = doConvertTimezone(current_time, "EST", totimezone)
+        newtime = doConvertTimezone(current_time, "EPT", totimezone)
         message_info = await ctx.send("Current time: " + newtime + " " + 
             totimezone)
     #end Time command
