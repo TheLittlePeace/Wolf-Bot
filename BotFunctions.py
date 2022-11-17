@@ -209,8 +209,14 @@ setUser - Sets a member's user up in the database
 def setUser(username: str, userid: int):
     global PGCONN
     cur = PGCONN.cursor()
-    cur.execute("INSERT INTO members(username, userid) VALUES (%s, %s)",
-        (username.strip(), str(userid)))
+
+    #Get the next record
+    cur.execute("SELECT MAX(id) + 1 FROM members")
+    ret = cur.fetchone()
+    id = ret[0]
+
+    cur.execute("INSERT INTO members(id, username, userid) VALUES (%s, %s, %s)",
+        (str(id), username.strip(), str(userid)))
     
     #Check to see if it worked
     cur.execute("SELECT userid FROM members WHERE username = %s", (username,))
@@ -393,14 +399,19 @@ doAddNickname - add a nickname to an existing player
 def doAddNickname(userid: int, nickname: str):
     global PGCONN
     cur = PGCONN.cursor()
+
+    sqlstmt = "SELECT id FROM members WHERE userid = %s"
+    cur.execute(sqlstmt, (str(userid),))
+    ret = cur.fetchone()
+    id = ret[0]
+
     sqlstmt = """INSERT INTO members_nicknames
-            VALUES((select id from members where userid = %s), %s)"""
-    cur.execute(sqlstmt, (str(userid), nickname))
+            VALUES(%s, %s)"""
+    cur.execute(sqlstmt, (str(id), nickname))
     PGCONN.commit()
     #Make sure it worked
-    sqlstmt = """SELECT nickname FROM members_nicknames WHERE id = (
-        SELECT id FROM members WHERE name = %s)"""
-    cur.execute(sqlstmt, (str(userid),))
+    sqlstmt = """SELECT nickname FROM members_nicknames WHERE memberid = %s"""
+    cur.execute(sqlstmt, (str(id),))
     ret = cur.fetchone()
     if(ret == None):
         cur.close()

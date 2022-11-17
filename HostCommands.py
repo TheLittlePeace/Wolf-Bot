@@ -236,12 +236,16 @@ class Host_Commands(commands.Cog):
         success = setUser(username, userid)
         if(success == False):
             customError(ctx, "Failed adding user!")
+        else:
+            await ctx.reply(username + " added.")
     #end addPlayer
 
     @commands.command()
     @commands.has_any_role("The Werewolf Council", "Host")
-    async def addNickname(self, ctx: commands.Context, userid: int, nickname: str):
+    async def addNickname(self, ctx: commands.Context, userid: str, nickname: str):
         success = doAddNickname(userid, nickname)
         if(success == False):
             customError(ctx, "Failed adding nickname!")
+        else:
+            await ctx.reply(nickname + " added.")
 
