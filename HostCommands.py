@@ -229,3 +229,19 @@ class Host_Commands(commands.Cog):
             return
         await endChannel.send(message)
     #end Say
+
+    @commands.command()
+    @commands.has_any_role("The Werewolf Council", "Host")
+    async def addPlayer(self, ctx: commands.Context, username: str, userid: int):
+        success = setUser(username, userid)
+        if(success == False):
+            customError(ctx, "Failed adding user!")
+    #end addPlayer
+
+    @commands.command()
+    @commands.has_any_role("The Werewolf Council", "Host")
+    async def addNickname(self, ctx: commands.Context, userid: int, nickname: str):
+        success = doAddNickname(userid, nickname)
+        if(success == False):
+            customError(ctx, "Failed adding nickname!")
+

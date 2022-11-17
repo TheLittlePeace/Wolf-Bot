@@ -356,4 +356,56 @@ def phaseChange():
         current_PET = current_PET.strftime("%Y-%m-%d, %H:%M:%S")
         setGlobalData("PHASE_END_TIME", current_PET)
         
-        
+# """
+# doAddUser - add a new player to the game
+#     Parms:
+#         name:   Name of the player
+#         id:     The discord user ID
+#     Returns:
+#         True if successful, False otherwise.
+# """
+# def doAddUser(name: str, id: int):
+#     global PGCONN
+#     cur = PGCONN.cursor()
+#     sqlstmt = "INSERT INTO members mbr VALUES(%s, %i)"
+#     cur.execute(sqlstmt, (name, id))
+#     PGCONN.commit()
+#     #Make sure it worked
+#     sqlstmt = "SELECT username FROM members WHERE userid = %i"
+#     cur.execute(sqlstmt, (id,))
+#     ret = cur.fetchone()
+#     if(ret == None):
+#         cur.close()
+#         return False
+#     PGCONN.commit()
+#     cur.close()
+#     return True
+# #end doAddUser
+
+"""
+doAddNickname - add a nickname to an existing player
+    Parms:
+        name:       Name of the player
+        nickname:   Nickname to be set
+    Returns:
+        True if successful, False otherwise
+"""
+def doAddNickname(userid: int, nickname: str):
+    global PGCONN
+    cur = PGCONN.cursor()
+    sqlstmt = """INSERT INTO members_nicknames
+            VALUES((select id from members where userid = %s), %s)"""
+    cur.execute(sqlstmt, (str(userid), nickname))
+    PGCONN.commit()
+    #Make sure it worked
+    sqlstmt = """SELECT nickname FROM members_nicknames WHERE id = (
+        SELECT id FROM members WHERE name = %s)"""
+    cur.execute(sqlstmt, (str(userid),))
+    ret = cur.fetchone()
+    if(ret == None):
+        cur.close()
+        return False
+    PGCONN.commit()
+    cur.close()
+    return True
+#end doAddNickname
