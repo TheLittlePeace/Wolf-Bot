@@ -89,8 +89,8 @@ class Player_Commands(commands.Cog):
         response = "__Current Vote Standing:__\n"
         living_players = await getLiving(ctx)
         for memb in living_players:
-            sql = "SELECT COUNT(*) FROM playervotes WHERE vote = %s AND id = %s"
-            cur.execute(sql, (memb.name, str(vote_id)))
+            sql = "SELECT COUNT(*) FROM playervotes WHERE lower(vote) = %s AND id = %s"
+            cur.execute(sql, (memb.name.lower(), str(vote_id)))
             votes = cur.fetchone()
             # response += "**" + memb.name + "**: " + str(votes[0]) + "\n"
             ret_dict[memb.display_name] = votes[0]
