@@ -17,7 +17,15 @@ class Player_Commands(commands.Cog):
             ctx:        Commands context
             totimezone: The timezone to use for the time. Default UTC
     """
-    @commands.command()
+    @commands.command(
+        help = (
+            "Returns the time that the current phase will end.\n"
+            "You can specify the timezone you want returned, like EST, UTC, "
+            "PST, etc. Defaults to UTC if not specified."
+        ),
+        brief = "\tGet current phase end",
+        usage = "[ToTimezone]"
+    )
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
     async def PhaseEnd(self, ctx, totimezone="UTC"):
         totimezone = totimezone.upper()
@@ -49,7 +57,13 @@ class Player_Commands(commands.Cog):
             self:   This class
             ctx:    Commands context
     """
-    @commands.command()
+    @commands.command(
+        help = (
+            "Displays how much time is left in the current phase."
+        ),
+        brief = "\tHow long until phase end",
+        usage = ""
+    )
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
     async def PhaseLeft(self, ctx):
         throwaway = await doPhaseLeft(ctx)
@@ -62,7 +76,15 @@ class Player_Commands(commands.Cog):
             ctx:        Commands context
             totimezone: The timezone to display the time in. Default UTC
     """
-    @commands.command()
+    @commands.command(
+        help = (
+            "Displays the current time in a specified timezone.\n"
+            "Can specify a timezone such as EST, UTC, PST, etc. Defaults to "
+            "UTC."
+        ),
+        brief = "\tCurrent time for a timezone",
+        usage = "[ToTimezone]"
+    )
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
     async def Time(self, ctx, totimezone="UTC"):
         totimezone = totimezone.upper()
@@ -79,7 +101,14 @@ class Player_Commands(commands.Cog):
             self:   This class
             ctx:    Commands context
     """
-    @commands.command()
+    @commands.command(
+        help = (
+            "Displays the current vote standings. Orders them by the most "
+            "votes to the least."
+        ),
+        brief = "\tCurrent vote standings.",
+        usage = ""
+    )
     @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
     async def Votes(self, ctx):
         global PGCONN
@@ -101,4 +130,10 @@ class Player_Commands(commands.Cog):
             response += "**" + key + "**: " + str(sorted_dict[key]) + "\n"
         await ctx.send(response)
         cur.close()
+        
+
+
+
+
+
         

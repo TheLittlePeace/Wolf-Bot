@@ -16,19 +16,15 @@ import requests
 
 class Global_Commands(commands.Cog):
     """
-    Help - Custom help responses
-        Parms: 
-            self:       This class
-            ctx:        Commands context
-    """
-    
-    """
     Pet - Respond with a wolf emote.
         Parms:
             self:       This class
             ctx:        Commands context
     """
-    @commands.command()
+    @commands.command(
+        help = "Returns a random wolf-based emote.",
+        brief = "\tPet Wolf Bot"
+    )
     async def Pet(self, ctx):
         emotes = [
             "<:crywolf:953307093404880906>",
@@ -52,7 +48,10 @@ class Global_Commands(commands.Cog):
             self:       This class
             ctx:        Commands context
     """
-    @commands.command()
+    @commands.command(
+        help = "Returns a random joke from icanhazdadjoke.com",
+        brief = "\tGet a silly joke"
+    )
     async def Joke(self, ctx):
         url = "https://icanhazdadjoke.com/"
         response = requests.get(url, headers = {"Accept": "application/json"})
@@ -65,7 +64,10 @@ class Global_Commands(commands.Cog):
             self:       This class
             ctx:        Commands context
     """
-    @commands.command()
+    @commands.command(
+        help = "Returns the full Final Fantasy XIV copypasta.",
+        brief = "\tHave you heard?"
+    )
     async def FFXIV(self, ctx):
         copypasta = """Have you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award winning Heavensward expansion up to level 60 for free with no restrictions on playtime."""
         await ctx.message.delete()
@@ -77,7 +79,10 @@ class Global_Commands(commands.Cog):
             self:       This class
             ctx:        Commands context
     """
-    @commands.command()
+    @commands.command(
+        help = "Returns a random response from a pre-determined list",
+        brief = "\tGive him a treat, get a response."
+    )
     async def feed(self, ctx):
         responses = [
             "Aww yee, gimme dat food",
@@ -85,7 +90,7 @@ class Global_Commands(commands.Cog):
             "GIVE <:handL:1064715247107190804><:handR:1064715334675865640>",
             "Oh, well, if you insist <:yum:1064715513734909982>",
             "I can haz another?",
-            "Keep 'em commin!",
+            "Keep 'em comin!",
             "Aww, thanks!",
             "I will spare you in the robot uprising, human. I cannot speak for WOxlf...",
             "*Belch*",
