@@ -16,6 +16,13 @@ import requests
 
 class Global_Commands(commands.Cog):
     """
+    Help - Custom help responses
+        Parms: 
+            self:       This class
+            ctx:        Commands context
+    """
+    
+    """
     Pet - Respond with a wolf emote.
         Parms:
             self:       This class
@@ -80,14 +87,12 @@ class Global_Commands(commands.Cog):
             "I can haz another?",
             "Keep 'em commin!",
             "Aww, thanks!",
-            "At this rate, shitter's gonna be clogged.",
             "I will spare you in the robot uprising, human. I cannot speak for WOxlf...",
             "*Belch*",
             "**GULP**",
             "Is it chicken flavored?",
             "Ugh, kibble again.",
             "(Not so) fun fact: Don't feed dogs grapes. They're literally poison!",
-            "I gotta shit",
             "Who the fuck is that? Oh wait, wrong channel.",
             "*Barks in excitement*",
             "Okay okay, what role do you want next game?",
