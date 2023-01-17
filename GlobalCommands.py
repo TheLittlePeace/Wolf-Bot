@@ -63,3 +63,37 @@ class Global_Commands(commands.Cog):
         copypasta = """Have you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award winning Heavensward expansion up to level 60 for free with no restrictions on playtime."""
         await ctx.message.delete()
         await ctx.send(copypasta)
+    
+    """
+    Feed - Give wolfbot a treat.
+        Parms:
+            self:       This class
+            ctx:        Commands context
+    """
+    @commands.command()
+    async def feed(self, ctx):
+        responses = [
+            "Aww yee, gimme dat food",
+            "Nom nom nom nom nom",
+            "GIVE <:handL:1064715247107190804><:handR:1064715334675865640>",
+            "Oh, well, if you insist <:yum:1064715513734909982>",
+            "I can haz another?",
+            "Keep 'em commin!",
+            "Aww, thanks!",
+            "At this rate, shitter's gonna be clogged.",
+            "I will spare you in the robot uprising, human. I cannot speak for WOxlf...",
+            "*Belch*",
+            "**GULP**",
+            "Is it chicken flavored?",
+            "Ugh, kibble again.",
+            "(Not so) fun fact: Don't feed dogs grapes. They're literally poison!",
+            "I gotta shit",
+            "Who the fuck is that? Oh wait, wrong channel.",
+            "*Barks in excitement*",
+            "Okay okay, what role do you want next game?",
+            "Thanks, but I'm on a diet.",
+            "FOOOOOOOOOOOOOOOOOD",
+            "Smells disgusting. I'M IN!"
+        ]
+        chosen = random.choice(responses)
+        await ctx.reply(chosen)
