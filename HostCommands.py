@@ -183,8 +183,8 @@ class Host_Commands(commands.Cog):
             "mark them as a spectator.\n"
             "Use this command at the beginning of the game, after Livify."
         ),
-        brief = "\tMark player(s) as living",
-        usage = "[Player1] [Player2] ... [PlayerN]"
+        brief = "\tMark player(s) as spectators",
+        usage = ""
     )
     @commands.has_any_role("The Werewolf Council", "Host")
     async def handleSpectators(self, ctx: commands.Context):
