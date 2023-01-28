@@ -32,6 +32,7 @@ BOT.add_cog(Global_Commands())
 # BOT.add_cog(Bot_Run_Game())
 BOT.add_cog(ErrorHandler(BOT))
 BOT.add_cog(voteRoomWatch(BOT))
+BOT.add_cog(whoIsPat(BOT))
 
 #Run the bot
 BOT.run(TOKEN)

@@ -6,6 +6,7 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 from discord.utils import get
+import re
 
 load_dotenv()
 
@@ -420,3 +421,8 @@ def doAddNickname(userid: int, nickname: str):
     cur.close()
     return True
 #end doAddNickname
+
+def string_found(string1, string2):
+    if re.search(r"\b" + re.escape(string1) + r"\b", string2):
+        return True
+    return False

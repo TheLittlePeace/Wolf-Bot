@@ -78,5 +78,21 @@ class voteRoomWatch(commands.Cog):
             cur.close()
     #end on_message
             
+#############################
+# WHI IS PAT?
+#############################
+class whoIsPat(commands.Cog):
+    """A cog for monitoring every channel for pat"""
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
 
+    """
+    Monitor every room for Pat. When Pat is said, reply appropriately.
+    """
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if (string_found("pat", message.content.lower())
+        and not message.author.bot):
+            await message.reply("WHO the *FUCK* is Pat?")
+            return
         
