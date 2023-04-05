@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from BotFunctions import *
 import collections
+import inspirobot
 
 #############################
 # PLAYER-SPECIFIC COMMANDS
@@ -131,7 +132,23 @@ class Player_Commands(commands.Cog):
         await ctx.send(response)
         cur.close()
         
-
+    """
+    Inspire - Display an... Inspirational... message
+        Parms:
+            self:   This class
+            ctx:    Commands context
+    """
+    @commands.command(
+        help = (
+            "Displays an Inspirobot image "
+        ),
+        brief = "\tInspire!.",
+        usage = ""
+    )
+    @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
+    async def Inspire(self, ctx):
+        quote = inspirobot.generate()
+        await ctx.send(quote.url)
 
 
 
