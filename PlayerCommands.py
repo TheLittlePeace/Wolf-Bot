@@ -4,7 +4,6 @@ import discord
 from discord.ext import commands
 from BotFunctions import *
 import collections
-import inspirobot
 
 #############################
 # PLAYER-SPECIFIC COMMANDS

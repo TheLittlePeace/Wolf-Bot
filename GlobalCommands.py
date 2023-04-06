@@ -6,6 +6,7 @@ from BotFunctions import *
 import random
 import json
 import requests
+import inspirobot
 
 # jokesfile = open('jokes.json')
 # jokes = json.load(jokesfile)
