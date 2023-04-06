@@ -131,24 +131,6 @@ class Player_Commands(commands.Cog):
             response += "**" + key + "**: " + str(sorted_dict[key]) + "\n"
         await ctx.send(response)
         cur.close()
-        
-    """
-    Inspire - Display an... Inspirational... message
-        Parms:
-            self:   This class
-            ctx:    Commands context
-    """
-    @commands.command(
-        help = (
-            "Displays an Inspirobot image "
-        ),
-        brief = "\tInspire!.",
-        usage = ""
-    )
-    @commands.has_any_role("The Werewolf Council", "Host", "Living", "Dead")
-    async def Inspire(self, ctx):
-        quote = inspirobot.generate()
-        await ctx.send(quote.url)
 
 
 

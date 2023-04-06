@@ -107,3 +107,20 @@ class Global_Commands(commands.Cog):
         ]
         chosen = random.choice(responses)
         await ctx.reply(chosen)
+        
+    """
+    Inspire - Display an... Inspirational... message
+        Parms:
+            self:   This class
+            ctx:    Commands context
+    """
+    @commands.command(
+        help = (
+            "Displays an Inspirobot image "
+        ),
+        brief = "\tInspire!.",
+        usage = ""
+    )
+    async def Inspire(self, ctx):
+        quote = inspirobot.generate()
+        await ctx.send(quote.url)
