@@ -7,6 +7,10 @@ import random
 import json
 import requests
 import inspirobot
+import openai
+import requests
+from dotenv import load_dotenv
+load_dotenv()
 
 # jokesfile = open('jokes.json')
 # jokes = json.load(jokesfile)
@@ -88,7 +92,7 @@ class Global_Commands(commands.Cog):
         responses = [
             "Aww yee, gimme dat food",
             "Nom nom nom nom nom",
-            "GIVE <:handL:1064715247107190804><:handR:1064715334675865640>",
+            "GIVE <:handL:1115727843788345384><:handR:1115727843788345384>",
             "Oh, well, if you insist <:yum:1064715513734909982>",
             "I can haz another?",
             "Keep 'em comin!",
@@ -104,7 +108,9 @@ class Global_Commands(commands.Cog):
             "Okay okay, what role do you want next game?",
             "Thanks, but I'm on a diet.",
             "FOOOOOOOOOOOOOOOOOD",
-            "Smells disgusting. I'M IN!"
+            "Smells disgusting. I'M IN!",
+            "Thanks!",
+            "Delicious"
         ]
         chosen = random.choice(responses)
         await ctx.reply(chosen)
@@ -125,3 +131,33 @@ class Global_Commands(commands.Cog):
     async def Inspire(self, ctx):
         quote = inspirobot.generate()
         await ctx.send(quote.url)
+    
+    """
+    Chat - Connect to ChatGPT with a question, get a response.
+        Parms:
+            self:       This class
+            ctx:        Commands context
+            question:   The question by the user
+    """
+    @commands.command(
+        help = (
+            "Chat with OpenAI's ChatGPT "
+        ),
+        brief = "\tChat with Wolfy!",
+        usage = ""
+    )
+    async def Chat(self, ctx, *args):
+        openai.api_key = 'pk-BYWTOgPDEXyWKuVdtkmCsXeFLopKIEyMLHHnqsiSzhsjnvEU'
+        openai.api_base = 'https://api.pawan.krd/v1'
+        question = ' '.join(args)
+        response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt="Human: " + question + "\nAI:",
+            temperature=0.7,
+            max_tokens=256,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0,
+            stop=["Human: ", "AI: "]
+        )
+        await ctx.reply(response.choices[0].text)
