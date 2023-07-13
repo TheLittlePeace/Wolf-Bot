@@ -151,7 +151,7 @@ class Global_Commands(commands.Cog):
         openai.api_base = 'https://api.pawan.krd/v1'
         question = ' '.join(args)
         response = openai.Completion.create(
-            model="text-davinci-003",
+            model="gpt-3.5-turbo",
             prompt="Human: " + question + "\nAI:",
             temperature=0.7,
             max_tokens=256,
