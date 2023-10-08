@@ -74,9 +74,8 @@ class Global_Commands(commands.Cog):
         brief = "\tHave you heard?"
     )
     async def FFXIV(self, ctx):
-        copypasta = """Have you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award winning Heavensward expansion up to level 60 for free with no restrictions on playtime."""
         await ctx.message.delete()
-        await ctx.send(copypasta)
+        await ctx.send(file=discord.File('FFXIV.jpg'))
     
     """
     Feed - Give wolfbot a treat.
