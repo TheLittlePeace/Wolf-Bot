@@ -22,7 +22,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
-BOT = commands.Bot(command_prefix = '$', case_insensitive = True,
+BOT = commands.Bot(command_prefix = '!', case_insensitive = True,
     intents = intents)
 
 #Add all cogs
