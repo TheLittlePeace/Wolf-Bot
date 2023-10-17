@@ -147,16 +147,17 @@ class Global_Commands(commands.Cog):
     )
     async def Chat(self, ctx, *args):
         openai.api_key = 'pk-BYWTOgPDEXyWKuVdtkmCsXeFLopKIEyMLHHnqsiSzhsjnvEU'
-        openai.api_base = 'https://api.pawan.krd/v1'
+        openai.api_base = 'https://api.pawan.krd/pai-001-light-beta/v1'
         question = ' '.join(args)
         response = openai.Completion.create(
-            model="gpt-3.5-turbo",
+            model="pai-001-light-beta",
             prompt="Human: " + question + "\nAI:",
-            temperature=0.7,
+            temperature=0.4,
             max_tokens=256,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0,
-            stop=["Human: ", "AI: "]
+            stop=["\n\n", "AI:"]
         )
+        temp = response.choices[0].text
         await ctx.reply(response.choices[0].text)
