@@ -152,12 +152,12 @@ class Global_Commands(commands.Cog):
         response = openai.Completion.create(
             model="pai-001-light-beta",
             prompt="Human: " + question + "\nAI:",
-            temperature=0.4,
-            max_tokens=256,
+            temperature=0.7,
+            max_tokens=1000,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0,
-            stop=["\n\n", "AI:"]
+            stop=["Human:"]
         )
-        temp = response.choices[0].text
-        await ctx.reply(response.choices[0].text)
+        text = response.choices[0].text.split("Human", 1)[0].strip().split("Topic:", 1)[0].strip()
+        await ctx.reply(text)
