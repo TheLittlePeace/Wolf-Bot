@@ -4,6 +4,7 @@
 import os
 from discord.ext import commands
 from dotenv import load_dotenv
+import asyncio
 
 # Created files
 from BotFunctions import *
@@ -19,20 +20,24 @@ load_dotenv()
 # GLOBALS
 #############################
 TOKEN = os.getenv('DISCORD_TOKEN')
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.presences = True
 intents.members = True
-BOT = commands.Bot(command_prefix = '!', case_insensitive = True,
-    intents = intents)
+
+#Main - run the bot
+def main():
+    BOT = commands.Bot(command_prefix = '!', case_insensitive = True,
+        intents = intents)
+    asyncio.run(load_cogs(BOT))
+    BOT.run(TOKEN)
 
 #Add all cogs
-BOT.add_cog(Host_Commands())
-BOT.add_cog(Player_Commands())
-BOT.add_cog(Global_Commands())
-# BOT.add_cog(Bot_Run_Game())
-BOT.add_cog(ErrorHandler(BOT))
-BOT.add_cog(voteRoomWatch(BOT))
-BOT.add_cog(whoIsPat(BOT))
+async def load_cogs(BOT):
+    await BOT.add_cog(Host_Commands())
+    await BOT.add_cog(Player_Commands())
+    await BOT.add_cog(Global_Commands())
+    await BOT.add_cog(ErrorHandler(BOT))
+    await BOT.add_cog(voteRoomWatch(BOT))
+    await BOT.add_cog(whoIsPat(BOT))
 
-#Run the bot
-BOT.run(TOKEN)
+main()

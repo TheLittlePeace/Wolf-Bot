@@ -14,6 +14,7 @@ class ErrorHandler(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, 
             error: commands.CommandError):
+        
         message = "Beep boop, something went wrong. "
         message += "Review the command and try again.\n"
         message += "Use !help [command] for more information.\n"
@@ -91,8 +92,11 @@ class whoIsPat(commands.Cog):
     """
     @commands.Cog.listener()
     async def on_message(self, message):
-        if (string_found("pat", message.content.lower())
-        and not message.author.bot):
-            await message.reply("WHO the *FUCK* is Pat?")
-            return
+        msg_in = message.content
+        bot_auth = message.author.bot
+        if msg_in != self.bot.command_prefix:
+            if (string_found("pat", msg_in.lower())
+            and not bot_auth):
+                await message.reply("WHO the *FUCK* is Pat?")
+        return
         

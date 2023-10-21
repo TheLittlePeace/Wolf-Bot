@@ -148,7 +148,7 @@ class Global_Commands(commands.Cog):
     async def Chat(self, ctx, *args):
         openai.api_key = 'pk-BYWTOgPDEXyWKuVdtkmCsXeFLopKIEyMLHHnqsiSzhsjnvEU'
         openai.api_base = 'https://api.pawan.krd/pai-001-light-beta/v1'
-        question = ' '.join(args)
+        question = ' '.join(args) + " Do not use more than 100 words in your response."
         response = openai.Completion.create(
             model="pai-001-light-beta",
             prompt="Human: " + question + "\nAI:",
@@ -159,5 +159,5 @@ class Global_Commands(commands.Cog):
             presence_penalty=0,
             stop=["Human:"]
         )
-        text = response.choices[0].text.split("Human", 1)[0].strip().split("Topic:", 1)[0].strip()
+        text = response.choices[0].text.split("Human", 1)[0].strip()[0:2000]
         await ctx.reply(text)
