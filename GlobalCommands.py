@@ -1,5 +1,4 @@
 #GlobalCommands.py
-import imp
 import discord
 from discord.ext import commands
 from BotFunctions import *
@@ -10,10 +9,15 @@ import inspirobot
 import openai
 import requests
 from dotenv import load_dotenv
+import transformers
+from myai import *
 load_dotenv()
 
 # jokesfile = open('jokes.json')
 # jokes = json.load(jokesfile)
+
+# NLP = transformers.pipeline("conversational", model="af1tang/personaGPT")
+DIALOG_HX = []
 
 #############################
 # GLOBAL COMMANDS
@@ -146,18 +150,20 @@ class Global_Commands(commands.Cog):
         usage = ""
     )
     async def Chat(self, ctx, *args):
-        openai.api_key = 'pk-BYWTOgPDEXyWKuVdtkmCsXeFLopKIEyMLHHnqsiSzhsjnvEU'
-        openai.api_base = 'https://api.pawan.krd/pai-001-light-beta/v1'
-        question = ' '.join(args) 
-        response = openai.Completion.create(
-            model="pai-001-light-beta",
-            prompt="Human: " + question + "\nAI:",
-            temperature=0.7,
-            max_tokens=1000,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0,
-            stop=["Human:"]
-        )
-        text = response.choices[0].text.split("Human", 1)[0].strip()[0:2000]
-        await ctx.reply(text)
+        # prompt = ' '.join(args)
+        # chat = NLP(transformers.Conversation(prompt), pad_token_id=50256)
+        # res = str(chat)
+        # res = res[res.find("assistant: ") + 11:].strip()
+        # await ctx.reply(res)
+        prompt = ' '.join(args)
+        user_inp = tokenizer.encode(prompt + tokenizer.eos_token)
+        DIALOG_HX.append(user_inp)
+        if(len(DIALOG_HX) > 500):
+            DIALOG_HX.pop()
+        bot_input_ids = to_var([personas + flatten(DIALOG_HX)]).long()
+        msg = generate_next(bot_input_ids)
+        DIALOG_HX.append(msg)
+        if(len(DIALOG_HX) > 500):
+            DIALOG_HX.pop()
+        await ctx.reply("{}".format(tokenizer.decode(msg, skip_special_tokens=True)))
+        
