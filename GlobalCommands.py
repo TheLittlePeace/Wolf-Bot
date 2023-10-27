@@ -16,7 +16,7 @@ load_dotenv()
 # jokesfile = open('jokes.json')
 # jokes = json.load(jokesfile)
 
-# NLP = transformers.pipeline("conversational", model="af1tang/personaGPT")
+NLP = transformers.pipeline("conversational", model="microsoft/DialoGPT-medium")
 DIALOG_HX = []
 
 #############################
@@ -150,20 +150,20 @@ class Global_Commands(commands.Cog):
         usage = ""
     )
     async def Chat(self, ctx, *args):
-        # prompt = ' '.join(args)
-        # chat = NLP(transformers.Conversation(prompt), pad_token_id=50256)
-        # res = str(chat)
-        # res = res[res.find("assistant: ") + 11:].strip()
-        # await ctx.reply(res)
         prompt = ' '.join(args)
-        user_inp = tokenizer.encode(prompt + tokenizer.eos_token)
-        DIALOG_HX.append(user_inp)
-        if(len(DIALOG_HX) > 500):
-            DIALOG_HX.pop()
-        bot_input_ids = to_var([personas + flatten(DIALOG_HX)]).long()
-        msg = generate_next(bot_input_ids)
-        DIALOG_HX.append(msg)
-        if(len(DIALOG_HX) > 500):
-            DIALOG_HX.pop()
-        await ctx.reply("{}".format(tokenizer.decode(msg, skip_special_tokens=True)))
+        chat = NLP(transformers.Conversation(prompt), pad_token_id=50256)
+        res = str(chat)
+        res = res[res.find("assistant: ") + 11:].strip()
+        await ctx.reply(res)
+        # prompt = ' '.join(args)
+        # user_inp = tokenizer.encode(prompt + tokenizer.eos_token)
+        # DIALOG_HX.append(user_inp)
+        # if(len(DIALOG_HX) > 15):
+        #     DIALOG_HX.pop()
+        # bot_input_ids = to_var([personas + flatten(DIALOG_HX)]).long()
+        # msg = generate_next(bot_input_ids)
+        # DIALOG_HX.append(msg)
+        # if(len(DIALOG_HX) > 15):
+        #     DIALOG_HX.pop()
+        # await ctx.reply("{}".format(tokenizer.decode(msg, skip_special_tokens=True)))
         
