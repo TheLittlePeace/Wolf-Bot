@@ -12,6 +12,8 @@ from HostCommands import *
 from PlayerCommands import *
 from GlobalCommands import *
 from Listeners import *
+from Bot.bot import ChatBot
+from Bot.ai import ChatAI
 # from RunGame import *
 
 load_dotenv()
@@ -26,10 +28,16 @@ intents.members = True
 
 #Main - run the bot
 def main():
+    global TOKEN
     BOT = commands.Bot(command_prefix = '!', case_insensitive = True,
         intents = intents)
     asyncio.run(load_cogs(BOT))
     BOT.run(TOKEN)
+    
+    client = ChatBot(1)
+    client.set_response_chance(0.10)
+    client.add_channel('canned-ham')
+    client.run(TOKEN)
 
 #Add all cogs
 async def load_cogs(BOT):

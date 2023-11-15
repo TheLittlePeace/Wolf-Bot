@@ -142,19 +142,21 @@ class Global_Commands(commands.Cog):
             ctx:        Commands context
             question:   The question by the user
     """
-    @commands.command(
-        help = (
-            "Chat with OpenAI's ChatGPT "
-        ),
-        brief = "\tChat with Wolfy!",
-        usage = ""
-    )
-    async def Chat(self, ctx, *args):
-        prompt = ' '.join(args)
-        chat = NLP(transformers.Conversation(prompt), pad_token_id=50256)
-        res = str(chat)
-        res = res[res.find("assistant: ") + 11:].strip()
-        await ctx.reply(res)
+    # @commands.command(
+    #     help = (
+    #         "Chat with OpenAI's ChatGPT "
+    #     ),
+    #     brief = "\tChat with Wolfy!",
+    #     usage = ""
+    # )
+
+
+    # async def Chat(self, ctx, *args):
+    #     prompt = ' '.join(args)
+    #     chat = NLP(transformers.Conversation(prompt), pad_token_id=50256)
+    #     res = str(chat)
+    #     res = res[res.find("assistant: ") + 11:].strip()
+        # await ctx.reply(res)
         # prompt = ' '.join(args)
         # user_inp = tokenizer.encode(prompt + tokenizer.eos_token)
         # DIALOG_HX.append(user_inp)
